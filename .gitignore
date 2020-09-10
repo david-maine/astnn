@@ -1,1 +1,10 @@
+__pycache__
+
 venv/
+
+model.pt
+
+data/dev
+data/test
+data/train
+data/ast.pkl
