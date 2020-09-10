@@ -143,3 +143,6 @@ if __name__ == '__main__':
         total += len(test_labels)
         total_loss += loss.item() * len(test_inputs)
     print("Testing results(Acc):", total_acc.item() / total)
+
+    torch.save(model.state_dict(), "model.pt")
+
