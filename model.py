@@ -17,12 +17,13 @@ class BatchTreeEncoder(nn.Module):
         self.batch_size = batch_size
         self.use_gpu = use_gpu
         self.node_list = []
+        self.embedding_list = []
         self.th = torch.cuda if use_gpu else torch
         self.batch_node = None
         # pretrained  embedding
         if pretrained_weight is not None:
             self.embedding.weight.data.copy_(torch.from_numpy(pretrained_weight))
-            # self.embedding.weight.requires_grad = False
+            self.embedding.weight.requires_grad = False
 
     def create_tensor(self, tensor):
         if self.use_gpu:
@@ -54,8 +55,9 @@ class BatchTreeEncoder(nn.Module):
             else:
                 batch_index[i] = -1
 
-        batch_current = self.W_c(batch_current.index_copy(0, Variable(self.th.LongTensor(index)),
-                                                          self.embedding(Variable(self.th.LongTensor(current_node)))))
+        embedding = Variable(batch_current.index_copy(0, Variable(self.th.LongTensor(index)),
+                                                          self.embedding(Variable(self.th.LongTensor(current_node)))), requires_grad=True)
+        batch_current = self.W_c(embedding)
 
         for c in range(len(children)):
             zeros = self.create_tensor(Variable(torch.zeros(size, self.encode_dim)))
@@ -66,6 +68,7 @@ class BatchTreeEncoder(nn.Module):
         # batch_current = F.tanh(batch_current)
         batch_index = [i for i in batch_index if i is not -1]
         b_in = Variable(self.th.LongTensor(batch_index))
+        self.embedding_list.append(self.batch_node.index_copy(0, b_in, embedding))
         self.node_list.append(self.batch_node.index_copy(0, b_in, batch_current))
         return batch_current
 
@@ -73,8 +76,10 @@ class BatchTreeEncoder(nn.Module):
         self.batch_size = bs
         self.batch_node = self.create_tensor(Variable(torch.zeros(self.batch_size, self.encode_dim)))
         self.node_list = []
+        self.embedding_list = []
         self.traverse_mul(x, list(range(self.batch_size)))
-        self.node_list = torch.stack(self.node_list)
+        # self.embedding_list = Variable(torch.stack(self.embedding_list), requires_grad=True)
+        self.node_list = Variable(torch.stack(self.node_list), requires_grad=True)
         return torch.max(self.node_list, 0)[0]
 
 

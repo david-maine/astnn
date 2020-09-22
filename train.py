@@ -34,7 +34,7 @@ if __name__ == '__main__':
     ENCODE_DIM = 128
     LABELS = 104
     EPOCHS = 15
-    BATCH_SIZE = 64
+    BATCH_SIZE = 32
     USE_GPU = True
     MAX_TOKENS = word2vec.syn0.shape[0]
     EMBEDDING_DIM = word2vec.syn0.shape[1]

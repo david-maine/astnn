@@ -1,0 +1,4 @@
+strict digraph "" {
+	node [label="\N"];
+	0	[label=End];
+}
