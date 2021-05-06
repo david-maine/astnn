@@ -126,5 +126,3 @@ class Pipeline:
 
 ppl = Pipeline('3:1:1', 'data/')
 ppl.run()
-
-

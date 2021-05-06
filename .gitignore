@@ -8,3 +8,5 @@ data/dev
 data/test
 data/train
 data/ast.pkl
+
+notebooks/*.p
